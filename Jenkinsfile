@@ -98,6 +98,7 @@ pipeline {
         script {
           // Update image url with built image url in above stage
           sh label: 'build resource.yaml with kustomize', script: """
+          cd base
             ${KUSTOMIZE_HOME}/kustomize edit set image ${IMAGE_NAME}=${env.DOCKER_IMAGE}
             ${KUSTOMIZE_HOME}/kustomize build --output ${MANIFEST_FILE}
           """
