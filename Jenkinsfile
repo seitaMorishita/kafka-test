@@ -100,7 +100,7 @@ pipeline {
           sh label: 'build resource.yaml with kustomize', script: """
           cd base
             ${KUSTOMIZE_HOME}/kustomize edit set image ${IMAGE_NAME}=${env.DOCKER_IMAGE}
-            ${KUSTOMIZE_HOME}/kustomize build --output ${MANIFEST_FILE}
+            ${KUSTOMIZE_HOME}/kustomize build --output /home/jenkins/agent/workspace/Tenant/ccbd-sens-sandbox/Namespace/ccbd-sens-sandbox-kafka-test/Apps/kafka-test-pipeline/${MANIFEST_FILE}
           cd ..
           """
 
