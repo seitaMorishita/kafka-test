@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: sample
+  description: An example CI/CD Pipeline of a CaaS application.
+  annotations:
+    git.rakuten-it.com/project-slug: caaspipeline/sample
+spec:
+  type: pipeline
+  owner: ci/cd group
+  lifecycle: production

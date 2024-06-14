@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../../base
+nameSuffix: -beta
+commonLabels:
+  env: beta
+images:
+- name: nginx
+  newName: registry-jpe1-beta.r-local.net/caas-admin/nginx
+  newTag: v1.0.0

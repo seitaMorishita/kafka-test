@@ -1,0 +1,119 @@
+#!/bin/groovy
+
+pipeline {
+	agent {
+		label 'slave'
+	}
+	options {
+		ansiColor('xterm')
+		buildDiscarder(logRotator(numToKeepStr: '20'))
+		timeout(time: 30, unit: 'MINUTES')
+		timestamps()
+	}
+	parameters {
+		string(name: 'K8S_CLUSTER_ID', description: 'Kubernetes cluster id')
+		string(name: 'K8S_NAMESPACE',  description: 'Kubernetes namespace')
+		string(name: 'ENVIRONMENT',    description: 'Release environment')
+		string(name: 'DOCKER_IMAGE',   description: 'Docker image name')
+		booleanParam(defaultValue: false, description: 'Update pipeline parameters without building/deploying', name: 'UPDATE_PIPELINE_ONLY')
+	}
+	environment {
+		IMAGE_NAME = 'nginx' // CHANGEME
+		MANIFEST_FILE = 'resource.yaml'
+		DOCKER_REGISTRY = "${dockerRegistry(params.K8S_CLUSTER_ID)}"
+	}
+	stages {
+		stage('Update the pipeline and abort') {
+			when {
+				expression { env.UPDATE_PIPELINE_ONLY != 'false' }
+			}
+			steps {
+				script {
+					currentBuild.result = 'ABORTED'
+					error('Pipeline successfully updated! Please rerun the pipeline!')
+				}
+			}
+		}
+
+		stage ('Build resource yaml') {
+			steps {
+				script {
+					// Update image url with built image url in above stage
+					// Build Kubernetes resource declaration for the env that specified by the parameters
+					dir("overlays/${params.ENVIRONMENT}") {
+						sh label: 'build resource.yaml with kustomize', script: """
+							${KUSTOMIZE_HOME}/kustomize edit set image ${IMAGE_NAME}="${env.DOCKER_REGISTRY}/${params.DOCKER_IMAGE}"
+							${KUSTOMIZE_HOME}/kustomize build --output ../../${MANIFEST_FILE}
+						"""
+					}
+
+					// cpd.getNameFromManifest only support single resource
+					// If you want to check rollout status of multiple deployments, please set DEPLOY_NAME statically and call kubectl rollout status twice.
+					env.DEPLOY_NAME = cpd.getNameFromManifest(file: env.MANIFEST_FILE, kind: 'Deployment')
+				}
+			}
+			post {
+				success {
+					archiveArtifacts env.MANIFEST_FILE
+				}
+			}
+		}
+
+		stage ('Apply manifests') {
+			steps {
+				script {
+					def APPLY_STATUS = cpd.kubectl("apply -f ${MANIFEST_FILE}")
+					if (APPLY_STATUS > 0) {
+						error("\u001B[31m Applyment is failed. Please check syntax of resource yaml, your permission or try to logout/login Jenkins to refresh token.\u001B[0m ")
+					}
+				}
+			}
+		}
+
+		stage('Watch the status of the rollout') {
+			when { expression { return env.DEPLOY_NAME } }
+			steps {
+				script {
+					// Wait until deployment become ready
+					def ROLLOUT_STATUS = cpd.kubectl("rollout status deployment ${DEPLOY_NAME}")
+					if (ROLLOUT_STATUS > 0) {
+						error("\u001B[31m Rollout deployment ${DEPLOY_NAME} is failed.\nref \u001B[0m https://kubernetes.io/docs/tasks/debug-application-cluster/debug-application/ ")
+						cpd.kubectl("get events | grep ${DEPLOY_NAME}")
+					}
+				}
+			}
+			post {
+				aborted {
+					script {
+						echo "\u001B[31m Rollout deployment ${DEPLOY_NAME} is timeout.\nref \u001B[0m https://kubernetes.io/docs/tasks/debug-application-cluster/debug-application/ "
+						cpd.kubectl("get events | grep ${DEPLOY_NAME}")
+					}
+				}
+			}
+		}
+
+		stage('End to end test') {
+			steps {
+				script {
+					// Do test
+					echo 'xxx'
+				}
+			}
+			post {
+				failure {
+					script {
+						cpd.kubectl("rollout undo deploy ${DEPLOY_NAME}")
+					}
+				}
+			}
+		}
+	}
+
+	post {
+		always {
+			// Clean up workspace to avoid mixing with the results of previous builds
+			// If you want to debug, comment out following line please
+			cleanWs()
+		}
+	}
+}

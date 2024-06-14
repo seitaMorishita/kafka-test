@@ -1,0 +1,72 @@
+#!/bin/groovy
+
+def NAMESPACE = "${env.JOB_NAME.split('/')[3]}"
+def IMAGE_NAME = 'nginx' // CHANGEME
+def DOCKER_REGISTRY = "${dockerRegistry(env.PROD1_CLUSTER_ID)}"
+def DOCKER_CRED = "${env.PROD1_CLUSTER_ID}_${NAMESPACE}_docker-cred"
+
+pipeline {
+	agent {
+		label 'slave'
+	}
+	options {
+		ansiColor('xterm')
+		buildDiscarder(logRotator(numToKeepStr: '20'))
+		timeout(time: 30, unit: 'MINUTES')
+		timestamps()
+	}
+	parameters {
+		extendedChoice(
+			name: 'CLUSTER_IDS',
+			description: 'Kubernetes cluster ids',
+			type: 'PT_CHECKBOX',
+			value: 'jpe2-caas1-prod1,jpw1-caas1-prod1',
+			quoteValue: false,
+			saveJSONParameterToFile: false
+		)
+		imageTag(name: 'DOCKER_IMAGE', description: 'Docker image',
+			image: "${NAMESPACE}/${IMAGE_NAME}", filter: '.*',
+			registry: "https://${DOCKER_REGISTRY}", credentialId: DOCKER_CRED, tagOrder: 'NATURAL')
+		booleanParam(defaultValue: false, description: 'Update pipeline parameters without building/deploying', name: 'UPDATE_PIPELINE_ONLY')
+	}
+	environment {
+		MANIFEST_FILE = 'resource.yaml'
+		K8S_NAMESPACE = "${NAMESPACE}"
+	}
+	stages {
+		stage('Update the pipeline and abort') {
+			when {
+				expression { env.UPDATE_PIPELINE_ONLY != 'false' }
+			}
+			steps {
+				script {
+					currentBuild.result = 'ABORTED'
+					error('Pipeline successfully updated! Please rerun the pipeline!')
+				}
+			}
+		}
+
+		stage('Deploy in parallel') {
+			steps {
+				script {
+					for(String clusterId : params.CLUSTER_IDS.split(',')) {
+						build(job: 'deploy', parameters: [
+							[$class: 'StringParameterValue', name: 'K8S_CLUSTER_ID', value: clusterId],
+							[$class: 'StringParameterValue', name: 'K8S_NAMESPACE', value: env.K8S_NAMESPACE],
+							[$class: 'StringParameterValue', name: 'ENVIRONMENT', value: 'release'],
+							[$class: 'StringParameterValue', name: 'DOCKER_IMAGE', value: env.DOCKER_IMAGE],
+						])
+					}
+				}
+			}
+		}
+	}
+
+	post {
+		always {
+			// Clean up workspace to avoid mixing with the results of previous builds
+			// If you want to debug, comment out following line please
+			cleanWs()
+		}
+	}
+}
