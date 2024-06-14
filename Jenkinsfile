@@ -33,7 +33,7 @@ pipeline {
 	environment {
 		// CHANGEME
 		// Usually this is Deployment name
-		APP_NAME = "sample"
+		APP_NAME = "kafka-test"
 
 		// CHANGEME "image: nginx" in a deployment.yaml is replaced with built image url by kustomize dynamically.
 		// If you want to replace different image name in a deployment.yaml, please use same image name in a deployment yaml.
