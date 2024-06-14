@@ -101,6 +101,7 @@ pipeline {
           cd base
             ${KUSTOMIZE_HOME}/kustomize edit set image ${IMAGE_NAME}=${env.DOCKER_IMAGE}
             ${KUSTOMIZE_HOME}/kustomize build --output ${MANIFEST_FILE}
+          cd ..
           """
 
           // cpd.getNameFromManifest only support single resource
