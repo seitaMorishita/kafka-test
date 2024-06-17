@@ -76,7 +76,6 @@ pipeline {
           docker push ${imageName}
           """
           env.DOCKER_IMAGE = imageName
-          }
         }
       }
     }
