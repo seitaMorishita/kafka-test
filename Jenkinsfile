@@ -68,13 +68,14 @@ pipeline {
           // BUILD_TIMESTAMP comes from https://plugins.jenkins.io/build-timestamp/ plugin
           // If you want to use different tag, change this logic please
           def tag = "${env.BUILD_TIMESTAMP}-${env.GIT_COMMIT[0..6]}-${params.ENVIRONMENT}"
+          def imageName = "${env.K8S_NAMESPACE}/${APP_NAME}:${tag}"
 
-          cpd.withDockerRegistry(env.K8S_CLUSTER_ID, env.K8S_NAMESPACE) {
-            // Build docker image with method of Jenkins docker plugin
-            // https://jenkins.io/doc/book/pipeline/docker/
-            def img = docker.build("${env.K8S_NAMESPACE}/${APP_NAME}:${tag}")
-            img.push()
-            env.DOCKER_IMAGE = img.imageName()
+          // Docker build and push commands
+          sh """
+          docker build --storage-opt size=184G -t ${imageName} .
+          docker push ${imageName}
+          """
+          env.DOCKER_IMAGE = imageName
           }
         }
       }
