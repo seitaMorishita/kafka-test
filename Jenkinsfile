@@ -58,16 +58,6 @@ pipeline {
     //   }
     // }
 
-    stage('Preparation') {
-      steps {
-        script {
-          // Prune Docker images and containers before building new image
-          sh "docker image prune -f"
-          sh "docker container prune -f"
-        }
-      }
-    }
-
     // Docker file exists in same repository as manifests repository
     stage('Build and Push image') {
       when {
