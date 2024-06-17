@@ -2,7 +2,8 @@ FROM node:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get -yqq install krb5-user libpam-krb5 && \
+RUN apt-get -qq update && \
+    apt-get -yqq install krb5-user libpam-krb5 && \
     apt-get -yqq clean
 
 COPY / ./
