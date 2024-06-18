@@ -12,3 +12,5 @@
 #
 #CMD ["npm", "start"]
 FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/nginx@sha256:5ea4c69f367856a72cb751ce81e374663bdde40e70bc2e6eecf557256d5f1c4a
+ENTRYPOINT ["tail"]
+CMD ["-f","/dev/null"]
