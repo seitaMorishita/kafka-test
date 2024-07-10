@@ -37,5 +37,4 @@
 #    apt-get -yqq install krb5-user libpam-krb5 && \
 #    apt-get -yqq clean
 
-# CMD ["bash"]
-FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/kafka3.3.1@sha256:b146746cf5dd22805609c6c2835bc7fc3a1f2896c6712849f75b6f705b8c4677
+FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/kafka3.3.1:1.1
