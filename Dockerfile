@@ -110,4 +110,4 @@
 # RUN apt-get -qq update && \
 #    apt-get -yqq install krb5-user libpam-krb5 && \
 #    apt-get -yqq clean
-FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/kafka3.3.1@sha256:abcf21dc9e6f7ed8eb37a2793af16047db7ac87a6d0d1604fe8fc3ab83f64ef9
+FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/kafka3.3.1@sha256:104714f0f506dea5f3eda9f46ee403bdb57078b05a6db881c40246d895413266
