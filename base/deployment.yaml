@@ -19,11 +19,11 @@ spec:
         image: nginx # This image name will be updated with kustomize
         resources:
           limits:
-            cpu: 100m
-            memory: 100Mi
+            cpu: 500m
+            memory: 512Mi
           requests:
-            cpu: 50m
-            memory: 50Mi
+            cpu: 250m
+            memory: 256Mi
         readinessProbe:
           httpGet:
             path: /

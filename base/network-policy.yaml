@@ -22,3 +22,15 @@ spec:
       ports:
         - protocol: TCP
           port: 88
+    - to:
+        - ipBlock:
+            cidr: 100.99.122.207/32
+      ports:
+        - protocol: TCP
+          port: 9092
+    - to:
+        - ipBlock:
+            cidr: 100.99.122.209/32
+      ports:
+        - protocol: TCP
+          port: 9092
