@@ -7,4 +7,35 @@
 #RUN apt-get -qq update && \
 #    apt-get -yqq install krb5-user libpam-krb5 && \
 #    apt-get -yqq clean
-FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/nginx@sha256:fe7f7e35feba542b400bb982fabcbd8d73bf0d5c4a391009f19d1406c53bff59
+# FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/nginx@sha256:fe7f7e35feba542b400bb982fabcbd8d73bf0d5c4a391009f19d1406c53bff59
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# FROM openjdk:11
+
+# ENV DEBIAN_FRONTEND=noninteractive
+# ENV KAFKA_VERSION=3.3.1
+# ENV KAFKA_HOME=/opt/kafka
+
+# RUN apt-get update -qq && \
+#     apt-get install -yqq wget && \
+#     apt-get clean
+
+# RUN wget -q https://archive.apache.org/dist/kafka/$KAFKA_VERSION/kafka_2.13-$KAFKA_VERSION.tgz -O /tmp/kafka.tgz && \
+#     tar xfz /tmp/kafka.tgz -C /opt && \
+#     mv /opt/kafka_2.13-$KAFKA_VERSION $KAFKA_HOME && \
+#     rm /tmp/kafka.tgz
+
+# ENV PATH=$PATH:$KAFKA_HOME/bin
+
+# COPY /kerberos-config ./
+
+# ENV DEBIAN_FRONTEND=noninteractive
+
+# USER root
+# RUN apt-get -qq update && \
+#    apt-get -yqq install krb5-user libpam-krb5 && \
+#    apt-get -yqq clean
+
+# CMD ["bash"]
+FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/kafka3.3.1@sha256:b146746cf5dd22805609c6c2835bc7fc3a1f2896c6712849f75b6f705b8c4677
