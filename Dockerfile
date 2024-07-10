@@ -82,6 +82,11 @@
 
 # RUN mkdir -p /usr/share/man/man1
 
+# RUN mkdir -p /usr/local/rms/rmsntf/sens_miguel_batch/logs
+
+# RUN chown -R nobody:nogroup /usr/local/rms/rmsntf/sens_miguel_batch/logs && \
+#     chmod -R 777 /usr/local/rms/rmsntf/sens_miguel_batch/logs
+
 # RUN apt-get update && \
 #     apt-get install -y openjdk-11-jre-headless && \
 #     apt-get clean && \
@@ -114,4 +119,4 @@
 # RUN echo "nginx ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/nginx
 
 # USER nginx
-FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/kafka3.3.1@sha256:3dba7a67f3d5d572ea44b728e70fb7dab0629f97d488ff10f35171f5d8706ea8
+FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/kafka3.3.1@sha256:f2feae312d39ec85aa52e5f4116ffb2738f42788652d4020ecaacca235bce380
