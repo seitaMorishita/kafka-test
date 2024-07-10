@@ -108,6 +108,10 @@
 # COPY /kerberos-config ./
 
 # RUN apt-get -qq update && \
-#    apt-get -yqq install krb5-user libpam-krb5 && \
+#    apt-get -yqq install krb5-user libpam-krb5 sudo && \
 #    apt-get -yqq clean
-FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/kafka3.3.1@sha256:104714f0f506dea5f3eda9f46ee403bdb57078b05a6db881c40246d895413266
+
+# RUN echo "nginx ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/nginx
+
+# USER nginx
+FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/kafka3.3.1@sha256:3dba7a67f3d5d572ea44b728e70fb7dab0629f97d488ff10f35171f5d8706ea8
