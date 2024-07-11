@@ -112,6 +112,9 @@
 
 # COPY /kerberos-config ./
 
+# ENV KAFKA_OPTS="-Djava.security.auth.login.config=/kafka_client_jaas.conf -Djava.security.krb5.conf=/krb5.conf"
+# ENV KRB5_CONFIG=/krb5.conf
+
 # RUN apt-get -qq update && \
 #    apt-get -yqq install krb5-user libpam-krb5 sudo && \
 #    apt-get -yqq clean
@@ -119,4 +122,4 @@
 # RUN echo "nginx ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/nginx
 
 # USER nginx
-FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/kafka3.3.1@sha256:f2feae312d39ec85aa52e5f4116ffb2738f42788652d4020ecaacca235bce380
+FROM registry-jpe1.r-local.net/ccbd-sens-sandbox-kafka-test/docker-container/kafka3.3.1@sha256:d1939b8da61c321a26e8a986bd401d82ae5c9f054042a7651597dd3503cfe093
